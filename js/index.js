@@ -58,7 +58,7 @@ window.addEventListener('DOMContentLoaded', () => {
     },
   ];
 
-  // function to Display the quiz questions and answers from the object
+  // function to display the quiz questions and answers from the object
   const displayQuiz = () => {
     const quizWrap = document.querySelector('#quizWrap');
     let quizDisplay = '';
@@ -108,37 +108,37 @@ window.addEventListener('DOMContentLoaded', () => {
   // call the displayQuiz function
   displayQuiz();
 
-  /* function starts the timer of the quiz, timeLimit variable is the default starting value in seconds.
-  Function also converts the time format from seconds to minutes:seconds format. */
+  // startTimer function starts the timer of the quiz, timeLimit variable is the default starting value in seconds.
+  // startTimer function also converts the time format from seconds to minutes:seconds format.
   const startTimer = () => {
     const timeLimit = 30; // maximum time allocated to quiz, value is in seconds.
     let elasped = 0; // value is in seconds
     displayTimerAtStart(timeLimit);
-    const timer = setInterval(function () {
 
-      // checks if quiz has been submitted, to prevent double result calculation.
-      if (submittedQuiz == true) {
+    // timer is using javascript's setInterval built-in method which ticks every 1 second.
+    const timer = setInterval(function () {
+      if (submittedQuiz == true) { // checks if quiz has been submitted, to prevent double result calculation.
         clearInterval(timer);
       }
 
       let timeLeft = timeLimit - elasped;
-      // this if statement allows the timer display 00:00 when done AND gives the student 1 extra second.
-      if (timeLeft >= 0) {
+      if (timeLeft >= 0) { // this if statement allows the timer display 00:00 when time's up, checks if there's time left AND gives the student 1 extra second.
         let mins = Math.floor(timeLeft / 60);
         let secs = Math.floor(timeLeft % 60);
+
+        // if statements to display time format as 00:00
         if (mins < 10) {
           mins = `0${mins}`;
         }
         if (secs < 10) {
           secs = `0${secs}`;
         }
-        console.log(mins, secs);
+        //console.log(mins, secs);
         elasped++;
         const updateTime = document.querySelector('#time');
         updateTime.innerHTML = `${mins}:${secs}`;
 
-      } else {
-        console.log("DONE");
+      } else { // else time is up, calculate score and terminate timer.
         calculateScore();
         clearInterval(timer);
       }
@@ -160,7 +160,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // submit button event, when quiz is submitted, score will be shown and correct answers will highlight.
+  // submit button event, when clicked, quiz results are submitted, score will be shown and correct answers will highlight.
   const submitQuiz = document.querySelector('#btnSubmit');
   submitQuiz.addEventListener('click', calculateScore);
 
