@@ -20,10 +20,12 @@
 *************************** */
 
 window.addEventListener('DOMContentLoaded', () => {
+  let submittedQuiz = false; // This is a global variable used to terminate startTimer() when true;
   const start = document.querySelector('#start');
   start.addEventListener('click', function (e) {
     document.querySelector('#quizBlock').style.display = 'block';
     start.style.display = 'none';
+    startTimer();
   });
   // quizArray QUESTIONS & ANSWERS
   // q = QUESTION, o = OPTIONS, a = CORRECT ANSWER
@@ -44,6 +46,16 @@ window.addEventListener('DOMContentLoaded', () => {
       o: ['Sydney', 'Canberra', 'Melbourne', 'Perth'],
       a: 1,
     },
+    {
+      q: 'Which animal is NOT an Australian animal?',
+      o: ['Koala', 'Kangaroo', 'Camel', 'Dingo'],
+      a: 2,
+    },
+    {
+      q: 'Which is a snack from Australia?',
+      o: ['Minties', 'Twinkies', 'Butterfinger', 'Tootsie Rolls'],
+      a: 0,
+    },
   ];
 
   // function to Display the quiz questions and answers from the object
@@ -63,7 +75,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // Calculate the score
+  // Calculate the score and display the score.
   const calculateScore = () => {
     let score = 0;
     quizArray.map((quizItem, index) => {
@@ -76,15 +88,85 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if (quizItem.a == i) {
           //change background color of li element here
+          liElement.style.backgroundColor = 'lightgreen';
         }
 
-        if (radioElement.checked) {
-          // code for task 1 goes here
+        // changed the if statement to include checking correct answer
+        // for every score checked correctly, increment score by 1;
+        if (radioElement.checked && quizItem.a == i) {
+          score++;
         }
       }
     });
+    // submit quiz and display score.
+    submittedQuiz = true;
+    const result = document.querySelector('#score');
+    result.innerText = `\n Your score is ${score}/${quizArray.length}`;
+    result.style.fontSize = "2em";
   };
 
   // call the displayQuiz function
   displayQuiz();
+
+  /* function starts the timer of the quiz, timeLimit variable is the default starting value in seconds.
+  Function also converts the time format from seconds to minutes:seconds format. */
+  const startTimer = () => {
+    const timeLimit = 30; // maximum time allocated to quiz, value is in seconds.
+    let elasped = 0; // value is in seconds
+    displayTimerAtStart(timeLimit);
+    const timer = setInterval(function () {
+
+      // checks if quiz has been submitted, to prevent double result calculation.
+      if (submittedQuiz == true) {
+        clearInterval(timer);
+      }
+
+      let timeLeft = timeLimit - elasped;
+      // this if statement allows the timer display 00:00 when done AND gives the student 1 extra second.
+      if (timeLeft >= 0) {
+        let mins = Math.floor(timeLeft / 60);
+        let secs = Math.floor(timeLeft % 60);
+        if (mins < 10) {
+          mins = `0${mins}`;
+        }
+        if (secs < 10) {
+          secs = `0${secs}`;
+        }
+        console.log(mins, secs);
+        elasped++;
+        const updateTime = document.querySelector('#time');
+        updateTime.innerHTML = `${mins}:${secs}`;
+
+      } else {
+        console.log("DONE");
+        calculateScore();
+        clearInterval(timer);
+      }
+    }, 1000);
+  }
+
+  // instead of displaying default time in html. This function dynamically display the quiz's time limit as specified in startTimer().
+  const displayTimerAtStart = (time) => {
+    let mins = Math.floor(time / 60);
+    let secs = Math.floor(time % 60);
+    if (mins < 10) {
+      mins = `0${mins}`;
+    }
+    if (secs < 10) {
+      secs = `0${secs}`;
+    }
+    const updateTime = document.querySelector('#time');
+    updateTime.innerHTML = `${mins}:${secs}`;
+  }
+
+
+  // submit button event, when quiz is submitted, score will be shown and correct answers will highlight.
+  const submitQuiz = document.querySelector('#btnSubmit');
+  submitQuiz.addEventListener('click', calculateScore);
+
+  // reset button event, refresh the page to the start.
+  const resetQuiz = document.querySelector('#btnReset');
+  resetQuiz.addEventListener('click', function (e) {
+    window.location.reload();
+  });
 });
